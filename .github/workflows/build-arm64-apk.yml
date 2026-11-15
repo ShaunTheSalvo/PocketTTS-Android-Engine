@@ -1,44 +1,45 @@
 name: Build ARM64 APK
-
 on:
-  workflow_dispatch:
-  push:
-    branches: [ main ]
+workflow_dispatch:
+push:
+branches: [ main ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install required SDK, Build Tools, and NDK
-        run: |
+build:
+runs-on: ubuntu-latest
+steps:
+- name: Checkout repository
+uses: actions/checkout@v4
+- name: Set up JDK 17
+uses: actions/setup-java@v4
+with:
+java-version: '17'
+distribution: 'temurin'
+- name: Setup Android SDK
+uses: android-actions/setup-android@v3
+- name: Install required SDK, Build Tools, and NDK
+run: |
           sdkmanager "platforms;android-37" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
 
-      - name: Download native ONNX Runtime dependencies
-        run: |
+- name: Download native ONNX Runtime dependencies
+run: |
           chmod +x ./scripts/prepare_android_native_deps.sh
           ./scripts/prepare_android_native_deps.sh
 
-      - name: Build Debug APK
-        run: |
+- name: Build Debug APK
+run: |
           chmod +x ./gradlew
           ./gradlew :app:assembleDebug
-          echo "APKs found:" && find app/build -name "*.apk"
 
-      - name: Upload ARM64 APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: pocket-tts-arm64-debug-apk
-          path: app/build/outputs/apk/debug/
+- name: Check APK output
+run: |
+          echo "Looking for APKs..."
+          find app/build/outputs/apk/debug -type f -name "*.apk" -ls
+          echo "Permissions and files listed above."
+
+- name: Upload ARM64 APK
+uses: actions/upload-artifact@v4
+with:
+name: pocket-tts-arm64-debug-apk
+path: app/build/outputs/apk/debug/
+# Uploading the whole dir avoids wildcard expansion issues
