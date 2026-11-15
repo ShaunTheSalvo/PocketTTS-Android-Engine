@@ -35,9 +35,10 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew :app:assembleDebug
+          echo "APKs found:" && find app/build -name "*.apk"
 
       - name: Upload ARM64 APK
         uses: actions/upload-artifact@v4
         with:
           name: pocket-tts-arm64-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/
