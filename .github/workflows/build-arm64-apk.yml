@@ -42,4 +42,3 @@ uses: actions/upload-artifact@v4
 with:
 name: pocket-tts-arm64-debug-apk
 path: app/build/outputs/apk/debug/
-# Uploading the whole dir avoids wildcard expansion issues
